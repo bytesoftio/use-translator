@@ -1,14 +1,20 @@
-import { createTranslator, useLanguage } from "./index"
+import { useLanguage } from "./index"
 import React from "react"
 import { mount } from "enzyme"
+import { createTranslator } from "@bytesoftio/translator"
+import { act } from "react-dom/test-utils"
 
 describe("useLanguage", () => {
-  it("uses language", () => {
+  it("uses language", async () => {
     const translator = createTranslator({}, "en")
-    translator.useLanguage = jest.fn(() => ["foo"] as any)
+
+    let renders = 0
+    let receivedSetLanguage
 
     const Test = () => {
-      const [language] = useLanguage(translator)
+      renders++
+      const [language, setLanguage] = useLanguage(translator)
+      receivedSetLanguage = setLanguage
 
       return (
         <h1>{language}</h1>
@@ -18,7 +24,24 @@ describe("useLanguage", () => {
     const wrapper = mount(<Test/>)
     const target = () => wrapper.find("h1")
 
-    expect(target().text()).toBe("foo")
-    expect(translator.useLanguage).toHaveBeenCalledTimes(1)
+    expect(target().text()).toBe("en")
+    expect(translator.getLanguage()).toBe("en")
+    expect(renders).toBe(1)
+
+    act(() => receivedSetLanguage("de"))
+
+    expect(target().text()).toBe("de")
+    expect(translator.getLanguage()).toBe("de")
+    expect(renders).toBe(2)
+
+    act(() => translator.setLanguage("en"))
+
+    expect(target().text()).toBe("en")
+    expect(translator.getLanguage()).toBe("en")
+    expect(renders).toBe(3)
+
+    act(() => translator.setLanguage("en"))
+
+    expect(renders).toBe(3)
   })
 })
