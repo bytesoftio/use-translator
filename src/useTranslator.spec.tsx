@@ -1,99 +1,47 @@
-import { useTranslator } from "./index"
+import { createTranslator, ObservableTranslator } from "@bytesoftio/translator"
 import { mount } from "enzyme"
-import React from "react"
-import { createTranslator } from "@bytesoftio/translator"
 import { act } from "react-dom/test-utils"
+import React from "react"
+import { useTranslator } from "./index"
 
 describe("useTranslator", () => {
-  it("uses translations", () => {
-    const translator = createTranslator({en: {key: "value"}}, "en")
-    translator.translations.listen = jest.fn()
-    translator.language.listen = jest.fn()
-    translator.fallbackLanguage.listen = jest.fn()
-
-    const Test = () => {
-      const t = useTranslator(translator)
-
-      return (
-        <h1>{t("key")}</h1>
-      )
-    }
-
-    const wrapper = mount(<Test/>)
-    const target = () => wrapper.find("h1")
-
-    expect(target().text()).toBe("value")
-    expect(translator.translations.listen).toHaveBeenCalledTimes(1)
-    expect(translator.language.listen).toHaveBeenCalledTimes(1)
-    expect(translator.fallbackLanguage.listen).toHaveBeenCalledTimes(1)
-  })
-
-  it("uses translations with scope", () => {
-    const translator = createTranslator({en: {bar: {key: "foo"}}}, "en")
-    translator.translations.listen = jest.fn()
-    translator.language.listen = jest.fn()
-    translator.fallbackLanguage.listen = jest.fn()
-
-    const Test = () => {
-      const t = useTranslator(translator, "bar")
-
-      return (
-        <h1>{t("key")}</h1>
-      )
-    }
-
-    const wrapper = mount(<Test/>)
-    const target = () => wrapper.find("h1")
-
-    expect(target().text()).toBe("foo")
-    expect(translator.translations.listen).toHaveBeenCalledTimes(1)
-    expect(translator.language.listen).toHaveBeenCalledTimes(1)
-    expect(translator.fallbackLanguage.listen).toHaveBeenCalledTimes(1)
-  })
-
-  it("updates translations", async () => {
-    const translator = createTranslator({en: {bar: {key: "foo"}}}, "en")
+  it("uses translator", () => {
+    const translator = createTranslator({ en: { foo: "bar" }, de: { foo: "yolo" } }, "en")
 
     let renders = 0
+    let receivedTranslator: ObservableTranslator
 
     const Test = () => {
       renders++
-      const t = useTranslator(translator, "bar")
+      receivedTranslator = useTranslator(translator)
 
       return (
-        <h1>{t("key")}</h1>
+        <h1>{ receivedTranslator.getLanguage() } { receivedTranslator.get("foo") }</h1>
       )
     }
 
     const wrapper = mount(<Test/>)
     const target = () => wrapper.find("h1")
 
-    expect(target().text()).toBe("foo")
+    expect(target().text()).toBe("en bar")
+    expect(translator.getLanguage()).toBe("en")
+    expect(translator.get("foo")).toBe("bar")
     expect(renders).toBe(1)
 
-    act(() => translator.addTranslations({en: {bar: {key: "yolo"}}}))
+    act(() => receivedTranslator.setLanguage("de"))
 
-    expect(target().text()).toBe("yolo")
+    expect(target().text()).toBe("de yolo")
+    expect(translator.getLanguage()).toBe("de")
+    expect(translator.get("foo")).toBe("yolo")
     expect(renders).toBe(2)
 
-    act(() => translator.addTranslations({en: {ding: "dong"}}))
+    act(() => translator.setLanguage("en"))
 
-    expect(target().text()).toBe("yolo")
+    expect(target().text()).toBe("en bar")
     expect(renders).toBe(3)
 
-    act(() => translator.setTranslationsForLanguage("de", {foo: "bar"}))
+    act(() => translator.setLanguage("en"))
 
-    expect(target().text()).toBe("yolo")
-    expect(renders).toBe(4)
-
-    act(() => translator.addTranslations({en: {bar: {key: "yolo"}}, de: {foo: "bar"}}))
-
-    expect(target().text()).toBe("yolo")
-    expect(renders).toBe(4)
-
-    act(() => translator.addTranslations({en: {bar: {key: "swag"}, de: {foo: "bar"}}}))
-
-    expect(target().text()).toBe("swag")
-    expect(renders).toBe(5)
+    expect(renders).toBe(3)
   })
 })

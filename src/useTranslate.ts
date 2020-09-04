@@ -1,10 +1,10 @@
+import { UseTranslate } from "./types"
 import { useValue } from "@bytesoftio/use-value"
-import { UseTranslator } from "./types"
 
-export const useTranslator: UseTranslator = (translator) => {
+export const useTranslate: UseTranslate = (translator, scope) => {
   useValue(translator.translations)
   useValue(translator.language)
   useValue(translator.fallbackLanguage)
 
-  return translator
+  return translator.scope(scope || "")
 }
