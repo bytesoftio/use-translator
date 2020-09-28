@@ -1,9 +1,8 @@
-import { TranslatorLanguage } from "./index"
+import { TranslatorLanguage, useLanguage } from "./index"
 import { mount } from "enzyme"
 import React from "react"
 import { createTranslator } from "@bytesoftio/translator"
 import { act } from "react-dom/test-utils"
-import { useLanguage } from "./useLanguage"
 
 describe("useLanguage", () => {
   it("uses language", () => {
