@@ -1,11 +1,12 @@
-import { ObservableTranslator } from "@bytesoftio/translator"
+import { ObservableTranslator, TranslateFunction } from "@bytesoftio/translator"
 
-export type TranslateFunction = (key: string, replacements?: any[], language?: string) => string
-export type LanguageUpdater = (language: string) => void
-export type LanguageSpread = [string, LanguageUpdater]
+export type TranslatorLanguage = {
+  current: string
+  fallback: string | undefined
+  available: string[]
+  set: (language: string) => void
+}
 
-export type UseTranslator = (translator: ObservableTranslator) => ObservableTranslator
-export type UseTranslatorFromContext = (scope?: string) => ObservableTranslator
-
-export type UseTranslate = (initializer: ObservableTranslator, scope?: string) => TranslateFunction
-export type UseTranslateFromContext = (scope?: string) => TranslateFunction
+export type UseTranslator = (translator?: ObservableTranslator) => ObservableTranslator
+export type UseTranslate = (translator?: ObservableTranslator, scope?: string) => TranslateFunction
+export type UseLanguage = (translator?: ObservableTranslator) => TranslatorLanguage

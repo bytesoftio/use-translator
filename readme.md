@@ -13,6 +13,7 @@
 - [Description](#description)
 - [useTranslator](#usetranslator)
 - [useTranslate](#usetranslate)
+- [useLanguage](#uselanguage)
 - [TranslatorContext](#translatorcontext)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -75,6 +76,32 @@ const Component = () => {
 }
 ```
 
+## useLanguage
+
+Use language related information inside your React component.
+
+```tsx
+import React from "react"
+import { createTranslator } from "@bytesoftio/translator"
+import { useLanguage } from "@bytesoftio/use-translator"
+
+const translator = createTranslator({ en: { title: "Foo", nested: { title: "Bar" } } }, "en")
+
+const Component = () => {
+  // connect component to language and translation changes
+  const l = useLanguage(translator)
+  
+  return (
+    <div>
+      <div>Current: {l.current}</div>
+      <div>Fallback: {l.fallback}</div>
+      <div>Available: {JSON.stringify(l.available)}</div>
+      <button onClick={()=> l.set("de")}>Set language to "de"</button>
+    </div>
+  )
+}
+```
+
 ## TranslatorContext
 
 You can share the translator instance through a predefined `TranslatorContext`.
@@ -83,12 +110,11 @@ You can share the translator instance through a predefined `TranslatorContext`.
 import React ,{useContext}from "react"
 import { createTranslator } from "@bytesoftio/translator"
 import { 
-  TranslatorContext, 
-  useTranslatorFromContext,
+  TranslatorContext,
+  useTranslator, 
   useTranslate, 
-  useTranslateFromContext, 
-  useTranslateFromContext 
-} from "@bytesoftio/use-translator"
+  useLanguage,
+} from "@bytesoftio/use-translator" 
 
 const translator = createTranslator({ en: { title: "Foo" }, de: { title: "Bar" } }, "en")
 
@@ -102,12 +128,16 @@ const RootComponent = () => {
 
 const ChildComponent = () => {
   const translator1 = useContext(TranslatorContext)
-  // or
-  const translator2 = useTranslatorFromContext()
+  // or use insance in context
+  const translator2 = useTranslator()
   
   const t1 = useTranslate(translator)
-  // or
-  const t2 = useTranslateFromContext()
+  // or use insance in context
+  const t2 = useTranslate()
+
+  const l1 = useLanguage(translator)
+  // or use instance in context
+  const l2 = useLanguage()
 
   const changeLanguage = () => translator1.setLanguage("de")
 

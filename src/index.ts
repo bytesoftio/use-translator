@@ -1,6 +1,4 @@
 export * from "./types"
 export * from "./TranslatorContext"
 export * from "./useTranslator"
-export * from "./useTranslatorFromContext"
 export * from "./useTranslate"
-export * from "./useTranslateFromContext"

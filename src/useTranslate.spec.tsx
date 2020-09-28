@@ -4,12 +4,9 @@ import React from "react"
 import { createTranslator } from "@bytesoftio/translator"
 import { act } from "react-dom/test-utils"
 
-describe("useTranslator", () => {
+describe("useTranslate", () => {
   it("uses translations", () => {
     const translator = createTranslator({ en: { key: "value" } }, "en")
-    translator.translations.listen = jest.fn()
-    translator.language.listen = jest.fn()
-    translator.fallbackLanguage.listen = jest.fn()
 
     const Test = () => {
       const t = useTranslate(translator)
@@ -23,16 +20,10 @@ describe("useTranslator", () => {
     const target = () => wrapper.find("h1")
 
     expect(target().text()).toBe("value")
-    expect(translator.translations.listen).toHaveBeenCalledTimes(1)
-    expect(translator.language.listen).toHaveBeenCalledTimes(1)
-    expect(translator.fallbackLanguage.listen).toHaveBeenCalledTimes(1)
   })
 
   it("uses translations with scope", () => {
     const translator = createTranslator({ en: { bar: { key: "foo" } } }, "en")
-    translator.translations.listen = jest.fn()
-    translator.language.listen = jest.fn()
-    translator.fallbackLanguage.listen = jest.fn()
 
     const Test = () => {
       const t = useTranslate(translator, "bar")
@@ -46,9 +37,6 @@ describe("useTranslator", () => {
     const target = () => wrapper.find("h1")
 
     expect(target().text()).toBe("foo")
-    expect(translator.translations.listen).toHaveBeenCalledTimes(1)
-    expect(translator.language.listen).toHaveBeenCalledTimes(1)
-    expect(translator.fallbackLanguage.listen).toHaveBeenCalledTimes(1)
   })
 
   it("updates translations", async () => {
