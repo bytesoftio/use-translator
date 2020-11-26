@@ -1,6 +1,6 @@
 {
   "name": "@bytesoftio/use-translator",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "author": "Maxim Kott",
   "license": "MIT",
   "main": "dist/index.js",
